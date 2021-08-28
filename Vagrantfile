@@ -1,8 +1,20 @@
 MASTER_COUNT = 3
 NODE_COUNT = 3
-IMAGE = "ubuntu/bionic64"
+IMAGE = "ubuntu/focal64"
+VIP = "10.0.0.30"
 
 Vagrant.configure("2") do |config|
+
+  config.vm.define "front_lb" do |traefik|
+      traefik.vm.box = IMAGE
+      traefik.vm.hostname = "traefik"
+      traefik.vm.network  :private_network, ip: VIP   
+      traefik.vm.provision "file", source: "./scripts/traefik/dynamic_conf.toml", destination: "/tmp/traefikconf/dynamic_conf.toml"
+      traefik.vm.provision "file", source: "./scripts/traefik/static_conf.toml", destination: "/tmp/traefikconf/static_conf.toml"
+      traefik.vm.provision "file", source: "./scripts/traefik/traefik.service", destination: "/tmp/traefik.service"
+      traefik.vm.provision "shell", privileged: true,  path: "scripts/lb_install.sh"
+      traefik.vm.network "forwarded_port", guest: 6443, host: 6443
+  end
 
   (1..MASTER_COUNT).each do |i|
     config.vm.define "kubemaster#{i}" do |kubemasters|
@@ -26,13 +38,14 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define "front_lb" do |traefik|
-      traefik.vm.box = IMAGE
-      traefik.vm.hostname = "traefik"
-      traefik.vm.network  :private_network, ip: "10.0.0.30"   
-      traefik.vm.provision "file", source: "./scripts/traefik/dynamic_conf.toml", destination: "/tmp/traefikconf/dynamic_conf.toml"
-      traefik.vm.provision "file", source: "./scripts/traefik/static_conf.toml", destination: "/tmp/traefikconf/static_conf.toml"
-      traefik.vm.provision "shell", privileged: true,  path: "scripts/lb_install.sh"
-      traefik.vm.network "forwarded_port", guest: 6443, host: 6443
-  end
+  # config.vm.define "front_lb" do |traefik|
+  #     traefik.vm.box = IMAGE
+  #     traefik.vm.hostname = "traefik"
+  #     traefik.vm.network  :private_network, ip: VIP   
+  #     traefik.vm.provision "file", source: "./scripts/traefik/dynamic_conf.toml", destination: "/tmp/traefikconf/dynamic_conf.toml"
+  #     traefik.vm.provision "file", source: "./scripts/traefik/static_conf.toml", destination: "/tmp/traefikconf/static_conf.toml"
+  #     traefik.vm.provision "file", source: "./scripts/traefik/traefik.service", destination: "/tmp/traefik.service"
+  #     traefik.vm.provision "shell", privileged: true,  path: "scripts/lb_install.sh"
+  #     traefik.vm.network "forwarded_port", guest: 6443, host: 6443
+  # end
 end

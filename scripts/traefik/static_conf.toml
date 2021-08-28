@@ -4,9 +4,16 @@
     [entryPoints.websecure.http.tls]
       [[entryPoints.websecure.http.tls.domains]]
         main = "10.0.0.30"
+  [entryPoints.web]
+    address = ":80"
+
 
 [providers.file]
-  directory = "/tmp/traefikconf/"
+  directory = "/etc/traefik/conf/"
   
 [serversTransport]
   insecureSkipVerify = true
+
+[api]
+  dashboard = true
+  insecure = true
