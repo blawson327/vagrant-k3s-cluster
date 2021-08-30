@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
       kubemasters.vm.network  :private_network, ip: "10.0.0.#{i+10}"
       kubemasters.vm.provision "file", source: "./.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
       kubemasters.vm.provision "file", source: "./.ssh/id_rsa", destination: "/tmp/id_rsa"
-      kubemasters.vm.provision "shell", privileged: true,  path: "scripts/master_install.sh"
+      kubemasters.vm.provision "shell", privileged: true,  path: "scripts/master_install.sh", :args => [VIP]
     end
   end
 
