@@ -1,5 +1,5 @@
 #!/bin/sh
-
+VIP=${1}
 # Deploy keys to allow all nodes to connect each others as root
 mv /tmp/id_rsa*  /root/.ssh/
 
@@ -21,4 +21,4 @@ current_ip=$(/sbin/ip -o -4 addr list enp0s8 | awk '{print $4}' | cut -d/ -f1)
 
 # Launch k3s as agent
 scp -o StrictHostKeyChecking=no root@kubemaster1:/var/lib/rancher/k3s/server/token /tmp/token
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --server https://kubemaster1:6443 --token-file /tmp/token --node-ip=${current_ip}" sh -
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --server https://${VIP}:6443 --token-file /tmp/token --node-ip=${current_ip}" sh -
