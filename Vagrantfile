@@ -40,7 +40,7 @@ Vagrant.configure("2") do |config|
       kubenodes.vm.network  :private_network, ip: "10.0.0.#{i+20}"
       kubenodes.vm.provision "file", source: "./.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
       kubenodes.vm.provision "file", source: "./.ssh/id_rsa", destination: "/tmp/id_rsa"
-      kubenodes.vm.provision "shell", privileged: true,  path: "scripts/node_install.sh"
+      kubenodes.vm.provision "shell", privileged: true,  path: "scripts/node_install.sh", :args => [VIP]
     end
   end
 
